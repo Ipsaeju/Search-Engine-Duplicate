@@ -15,6 +15,11 @@ public class Posting {
 		mPositions.add(position);
 	}
 	
+	public Posting(int documentId, ArrayList<Integer> positions) {
+		mDocumentId = documentId;
+		mPositions = positions;
+	}
+	
 	public int getDocumentId() {
 		return mDocumentId;
 	}

@@ -2,7 +2,6 @@ package cecs429.text;
 
 import cecs429.text.TokenProcessor;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -62,6 +61,22 @@ public class NonAlphaProcessor implements TokenProcessor{
                 tokensList.add(processedToken);
                 return tokensList;
             }
+    }
+    
+    public int getTokenListSize(){
+		return tokensList.size();
+    	
+    }
+    
+    public static String stemToken(String token){
+        
+    	Stemmer vocabStem = new Stemmer();
+		for(int i = 0; i < token.length(); i++){
+			vocabStem.add(token.charAt(i));   
+		}
+		vocabStem.stem();
+        
+		return vocabStem.toString();
     }
 
 }

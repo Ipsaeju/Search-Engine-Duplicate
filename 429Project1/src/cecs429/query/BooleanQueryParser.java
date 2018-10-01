@@ -3,6 +3,8 @@ package cecs429.query;
 import java.util.ArrayList;
 import java.util.List;
 
+import cecs429.text.NonAlphaProcessor;
+
 /**
  * Parses boolean queries according to the base requirements of the CECS 429 project.
  * Does not handle phrase queries, NOT queries, NEAR queries, or wildcard queries... yet.
@@ -140,34 +142,54 @@ public class BooleanQueryParser {
 	 * Locates and returns the next literal from the given subquery string.
 	 */
 	private Literal findNextLiteral(String subquery, int startIndex) {
-		int subLength = subquery.length();
-		int lengthOut;
-		
-		// Skip past white space.
-		while (subquery.charAt(startIndex) == ' ') {
-			++startIndex;
-		}
-		
-		// Locate the next space to find the end of this literal.
-		int nextSpace = subquery.indexOf(' ', startIndex);
-		if (nextSpace < 0) {
-			// No more literals in this subquery.
-			lengthOut = subLength - startIndex;
-		}
-		else {
-			lengthOut = nextSpace - startIndex;
-		}
-		
-		// This is a term literal containing a single term.
-		return new Literal(
-		 new StringBounds(startIndex, lengthOut),
-		 new TermLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
-		
 		/*
 		TODO:
 		Instead of assuming that we only have single-term literals, modify this method so it will create a PhraseLiteral
 		object if the first non-space character you find is a double-quote ("). In this case, the literal is not ended
 		by the next space character, but by the next double-quote character.
 		 */
+		int subLength = subquery.length();
+        int lengthOut;
+        int nextSpace = 0;
+        boolean isPhrase = false;
+        
+        NonAlphaProcessor ntp = new NonAlphaProcessor();
+        
+        // Skip past white space.
+        while (subquery.charAt(startIndex) == ' ') {
+            ++startIndex;
+        }
+        
+        // Check if subquery begins with a quote mark
+        if (subquery.charAt(startIndex) == '\"') {
+            // Locate the ending quote mark to find the end of the phrase literal
+            nextSpace = subquery.indexOf("\"", ++startIndex);
+            // Make boolean true; this is a phrase literal
+            isPhrase = true;
+        }
+        else {
+            // Locate the next space to find the end of this literal.
+            nextSpace = subquery.indexOf(' ', startIndex);
+        }
+        if (nextSpace < 0) {
+            // No more literals in this subquery.
+            lengthOut = subLength - startIndex;
+        }
+        else {
+            lengthOut = nextSpace - startIndex;
+        }
+        
+        // This is a phrase literal containing multiple terms.
+        if (isPhrase) {
+            return new Literal(
+             new StringBounds(startIndex, lengthOut),
+             new PhraseLiteral(ntp.processToken(subquery.substring(startIndex, startIndex + lengthOut))));
+        }
+        
+        // This is a term literal containing a single term.
+        return new Literal(
+         new StringBounds(startIndex, lengthOut),
+         new TermLiteral(ntp.processToken(subquery.substring(startIndex, startIndex + lengthOut)).get(0)));
+		
 	}
 }

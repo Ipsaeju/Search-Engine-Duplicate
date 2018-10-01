@@ -1,4 +1,4 @@
-package edu.csulb;
+/*package edu.csulb;
 
 import cecs429.index.Index;
 import cecs429.index.Posting;
@@ -12,13 +12,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 public class TermDocumentIndexer {
-	/**
+	*//**
 	 Indexes all .txt files in the specified directory. First builds a dictionary
 	 of all terms in those files, then builds a boolean term-document matrix as
 	 the index.
 	 
 	 @param directory the Path of the directory to index.
-	 */
+	 *//*
 	public static Index indexDirectory(final Path directory) {
 		// will need a data structure to store all the terms in the document
 		// HashSet: a hashtable structure with constant-time insertion; does not
@@ -165,3 +165,4 @@ public class TermDocumentIndexer {
 
 	}
 }
+*/
