@@ -1,5 +1,6 @@
 package cecs429.text;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
@@ -40,5 +41,14 @@ public class EnglishTokenStream implements TokenStream {
 	public Iterable<String> getTokens() {
 		// Fancy trick to convert an Iterator to an Iterable.
 		return () -> new EnglishTokenIterator();
+	}
+
+	public void close() {
+			try {
+				mReader.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 }

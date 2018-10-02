@@ -3,8 +3,6 @@ package cecs429.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import cecs429.text.NonAlphaProcessor;
-
 /**
  * Parses boolean queries according to the base requirements of the CECS 429 project.
  * Does not handle phrase queries, NOT queries, NEAR queries, or wildcard queries... yet.
@@ -153,8 +151,6 @@ public class BooleanQueryParser {
         int nextSpace = 0;
         boolean isPhrase = false;
         
-        NonAlphaProcessor ntp = new NonAlphaProcessor();
-        
         // Skip past white space.
         while (subquery.charAt(startIndex) == ' ') {
             ++startIndex;
@@ -183,13 +179,13 @@ public class BooleanQueryParser {
         if (isPhrase) {
             return new Literal(
              new StringBounds(startIndex, lengthOut),
-             new PhraseLiteral(ntp.processToken(subquery.substring(startIndex, startIndex + lengthOut))));
+             new PhraseLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
         }
         
         // This is a term literal containing a single term.
         return new Literal(
          new StringBounds(startIndex, lengthOut),
-         new TermLiteral(ntp.processToken(subquery.substring(startIndex, startIndex + lengthOut)).get(0)));
+         new TermLiteral(subquery.substring(startIndex, startIndex + lengthOut)));
 		
 	}
 }

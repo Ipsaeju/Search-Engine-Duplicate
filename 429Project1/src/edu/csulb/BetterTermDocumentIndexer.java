@@ -6,6 +6,7 @@ import cecs429.documents.DocumentCorpus;
 import cecs429.index.Index;
 import cecs429.index.PositionalInvertedIndex;
 import cecs429.index.Posting;
+import cecs429.query.BooleanQueryParser;
 import cecs429.text.EnglishTokenStream;
 import cecs429.text.NonAlphaProcessor;
 
@@ -29,6 +30,9 @@ public class BetterTermDocumentIndexer {
 	/* Searches for terms in corpus. If query contains ":" key for special queries, calls SpecialQueries method
     to perform specific command*/
 	public static void queryCorpus(Index indx, DocumentCorpus corp){
+		BooleanQueryParser bqp = new BooleanQueryParser();
+		List<Posting> results = new ArrayList<>();
+		
 		String query = "";
 		Scanner scan = new Scanner(System.in);
 
@@ -39,11 +43,12 @@ public class BetterTermDocumentIndexer {
 				SpecialQueries(query, indx);
 			}
 			else{
-				if(indx.getPostings(query).size() <= 0 ){
+				results = bqp.parseQuery(query).getPostings(indx);
+				if(results.size() <= 0 ){
 					System.out.println("No documents contain the query: " + query); 
 				}
 				else{
-					for (Posting p : indx.getPostings(query)) {
+					for (Posting p : results) {
 						System.out.println("Document " + corp.getDocument(p.getDocumentId()).getTitle() + "Positions: " + p.getPositions());
 					}  
 				} 
@@ -72,16 +77,22 @@ public class BetterTermDocumentIndexer {
 			for (String t : tokens) {
 				ArrayList<String> processorTokenList = new ArrayList<String>();
 				
-				int preTokenListSize = processor.getTokenListSize();
 				processorTokenList = processor.processToken(t);
 				int postTokenListSize = processor.getTokenListSize();
 				
-				for (int i = preTokenListSize-1; i < postTokenListSize; i++){					
-					index.addTerm(processorTokenList.get(i),d.getId(),position);
+				if(postTokenListSize > 1){
+					for (int i = 0; i < postTokenListSize; i++){
+						index.addTerm(processorTokenList.get(i),d.getId(),position);
+					}	
 					position++;
 				}
+				else {
+					index.addTerm(processorTokenList.get(postTokenListSize-1),d.getId(),position);
+					position++;
+				}
+                
 			}
-
+			ets.close();
 		}
 
 		long end = System.currentTimeMillis();
@@ -120,12 +131,12 @@ public class BetterTermDocumentIndexer {
 		}
 		else if(command.equalsIgnoreCase(":vocab")){
 			System.out.println("Vocab");
-			List<String> vocab = indx.getVocabulary();
+			List<String> vocab = indx.getVocabulary().subList(0, 1000);
 			Collections.sort(vocab);
 			for(int i = 0; i < 1000 && i < vocab.size(); i++){
 				System.out.println(vocab.get(i));
 			}
-			System.out.println("Total vocabulary values in vocab list: " + vocab.size());
+			System.out.println("Total vocabulary values in vocab list: " + indx.getVocabulary().size());
 		}
 	}
 }
