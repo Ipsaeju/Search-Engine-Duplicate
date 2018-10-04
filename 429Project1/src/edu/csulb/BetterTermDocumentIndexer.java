@@ -12,7 +12,6 @@ import cecs429.text.NonAlphaProcessor;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
@@ -48,9 +47,19 @@ public class BetterTermDocumentIndexer {
 					System.out.println("No documents contain the query: " + query); 
 				}
 				else{
+					int c = 1;
 					for (Posting p : results) {
-						System.out.println("Document " + corp.getDocument(p.getDocumentId()).getTitle() + "Positions: " + p.getPositions());
-					}  
+						System.out.println("Document #"+ c + " " + corp.getDocument(p.getDocumentId()).getTitle());
+						c++;
+					}
+					System.out.println("Number of documents returned: "+ results.size());
+					
+					System.out.println("Would you like to select a document?(Y/N) ");
+					String response = scan.nextLine().toLowerCase();
+					if(response == "y"){
+						System.out.println("Select document.");
+						//int displayArticle = scan.nextInt();
+					}
 				} 
 			}
 		}
@@ -131,8 +140,8 @@ public class BetterTermDocumentIndexer {
 		}
 		else if(command.equalsIgnoreCase(":vocab")){
 			System.out.println("Vocab");
-			List<String> vocab = indx.getVocabulary().subList(0, 1000);
-			Collections.sort(vocab);
+			ArrayList<String> vocab = new ArrayList<String>(indx.getVocabulary().subList(0, 1000));
+			System.out.println(vocab.size());
 			for(int i = 0; i < 1000 && i < vocab.size(); i++){
 				System.out.println(vocab.get(i));
 			}

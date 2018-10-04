@@ -22,33 +22,33 @@ public class AndQuery implements QueryComponent {
 		// TODO: program the merge for an AndQuery, by gathering the postings of the composed QueryComponents and
 		// intersecting the resulting postings.
 		List<Posting> result = new ArrayList<>();
-        
+
 		List<List<Posting>> allPostings = new ArrayList<List<Posting>>();
-        for(QueryComponent q : mComponents){
-            allPostings.add(q.getPostings(index));
-        }
-        
-        result = allPostings.get(0);
-        for(int i = 1; i < allPostings.size(); i++){
-            int k = 0;
-            List<Posting> tempResult = new ArrayList<>();
-            for(int j = 0; j < allPostings.get(i).size() && k < result.size();){
-                if(result.get(k).getDocumentId() < allPostings.get(i).get(j).getDocumentId()){
-                    k++;
-                }
-                else if(result.get(k).getDocumentId() > allPostings.get(i).get(j).getDocumentId()){
-                    j++;
-                }
-                else{
-                    tempResult.add(new Posting(result.get(k).getDocumentId(),result.get(k).getPositions()));
-                    k++;
-                    j++;
-                }
-            }
-            result = tempResult;
-        }
-        
-        return result;
+		for(QueryComponent q : mComponents){
+			allPostings.add(q.getPostings(index));
+		}
+
+		result = allPostings.get(0);
+		for(int i = 1; i < allPostings.size(); i++){
+			int k = 0;
+			List<Posting> tempResult = new ArrayList<>();
+			for(int j = 0; j < allPostings.get(i).size() && k < result.size();){
+				if(result.get(k).getDocumentId() < allPostings.get(i).get(j).getDocumentId()){
+					k++;
+				}
+				else if(result.get(k).getDocumentId() > allPostings.get(i).get(j).getDocumentId()){
+					j++;
+				}
+				else{
+					tempResult.add(new Posting(result.get(k).getDocumentId()));
+					k++;
+					j++;
+				}
+			}
+			result = tempResult;
+		}
+
+		return result;
 	}
 	
 	@Override

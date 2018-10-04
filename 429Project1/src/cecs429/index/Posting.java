@@ -8,6 +8,11 @@ import java.util.ArrayList;
 public class Posting {
 	private int mDocumentId;
 	private ArrayList<Integer> mPositions;
+
+	public Posting(int documentId) {
+		mDocumentId = documentId;
+		mPositions = new ArrayList<Integer>();
+	}
 	
 	public Posting(int documentId, int position) {
 		mDocumentId = documentId;

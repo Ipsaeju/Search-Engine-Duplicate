@@ -22,7 +22,7 @@ public class OrQuery implements QueryComponent {
 	public List<Posting> getPostings(Index index) {
 		// TODO: program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
 		// union the resulting postings.
-		List<Posting> result = new ArrayList<>();
+        List<Posting> result = new ArrayList<>();
         
         List<List<Posting>> allPostings = new ArrayList<List<Posting>>();
         for(QueryComponent q : mComponents){
@@ -36,24 +36,24 @@ public class OrQuery implements QueryComponent {
             for(int j = 0; j < allPostings.get(i).size() || k < result.size();){
                 if(k >= result.size()){
                     while(j < allPostings.get(i).size()){
-                        tempResult.add(new Posting(allPostings.get(i).get(j++).getDocumentId(), allPostings.get(i).get(j++).getPositions()));
+                        tempResult.add(new Posting(allPostings.get(i).get(j++).getDocumentId()));
                     }
                 }
                 else if(j >= allPostings.get(i).size()){
                     while(k < result.size()){
-                        tempResult.add(new Posting(result.get(k++).getDocumentId(), result.get(k++).getPositions()));
+                        tempResult.add(new Posting(result.get(k++).getDocumentId()));
                     }
                 }
                 else if(result.get(k).getDocumentId() < allPostings.get(i).get(j).getDocumentId()){
-                    tempResult.add(new Posting(result.get(k).getDocumentId(), result.get(k).getPositions()));
+                    tempResult.add(new Posting(result.get(k).getDocumentId()));
                     k++;
                 }
                 else if(result.get(k).getDocumentId() > allPostings.get(i).get(j).getDocumentId()){
-                    tempResult.add(new Posting(allPostings.get(i).get(j).getDocumentId(), allPostings.get(i).get(j).getPositions()));
+                    tempResult.add(new Posting(allPostings.get(i).get(j).getDocumentId()));
                     j++;
                 }
                 else{
-                    tempResult.add(new Posting(result.get(k).getDocumentId(), result.get(k).getPositions()));
+                    tempResult.add(new Posting(result.get(k).getDocumentId()));
                     k++;
                     j++;
                 }

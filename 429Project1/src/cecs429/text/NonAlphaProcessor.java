@@ -15,44 +15,19 @@ public class NonAlphaProcessor implements TokenProcessor{
     @Override
     public ArrayList<String> processToken(String token) {
     	tokensList.clear();
-    	int firstAlpha = 0;
-    	int lastAlpha = 0;
-    	int lastIndex = token.length()-1;
     	
-    	if(!Character.isLetterOrDigit(token.charAt(0)) || !Character.isLetterOrDigit(token.charAt(lastIndex))){
-    		for (int i = 0; i < token.length(); i++){
-    			char c = token.charAt(i);
-    			if(Character.isLetterOrDigit(c)){
-    				firstAlpha = i;
-    				break;
-    			}
-    		}
-    		for (int i = token.length() - 1; i >= 0; i--){
-    			char c = token.charAt(i);
-    			if(Character.isLetterOrDigit(c)){
-    				lastAlpha = i+1;
-    				break;
-    			}
-    		}
-    		processedToken = token.substring(firstAlpha,lastAlpha);
-    	} 
-    	else{
-    		processedToken = token;
-    	}
-
-    	processedToken = processedToken.replaceAll("\'", "");
-    	processedToken = processedToken.replaceAll("\"", "");
-
+    	processedToken = token.replaceAll("^(\\W+)|(\\W+)$|'|\"", "").toLowerCase();
+    	
     	if (processedToken.contains("-")){
     		String hyphenSplit = processedToken;
     		String[] arrSplit = hyphenSplit.split("-");
     		for(String i : arrSplit){
-    			tokensList.add(i);
+    			tokensList.add(stemToken(i));
     		}
     		processedToken = processedToken.replaceAll("-", "");
     	}
     	
-    	tokensList.add(processedToken);
+    	tokensList.add(stemToken(processedToken));
     	
     	return tokensList;
 

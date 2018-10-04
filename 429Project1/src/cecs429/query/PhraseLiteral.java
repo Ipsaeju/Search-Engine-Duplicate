@@ -2,6 +2,7 @@ package cecs429.query;
 
 import cecs429.index.Index;
 import cecs429.index.Posting;
+import cecs429.text.NonAlphaProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class PhraseLiteral implements QueryComponent {
 		List<List<Posting>> allPostings = new ArrayList<List<Posting>>();
 		
 		for(String s : mTerms){
-			allPostings.add(index.getPostings(s));
+			allPostings.add(index.getPostings(NonAlphaProcessor.stemToken(s)));
 		}
 		
 		shareDocID = allPostings.get(0);
@@ -61,14 +62,14 @@ public class PhraseLiteral implements QueryComponent {
             }
             shareDocID = tempResult;
         }
-        
+    
         ArrayList<Integer> positions = new ArrayList<Integer>();
         int t = 0;
         
         for(Posting p: shareDocID){
         	positions.addAll(p.getPositions());
         	t++;
-        	if(t % mTerms.size() == 0){
+        	if(t % 2 == 0){
         		if(longestConsecutive(positions) == mTerms.size()){
         			result.add(new Posting(p.getDocumentId(),positions));
         		}
