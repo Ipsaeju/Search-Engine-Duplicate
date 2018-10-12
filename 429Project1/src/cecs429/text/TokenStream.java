@@ -6,4 +6,6 @@ package cecs429.text;
  */
 public interface TokenStream {
 	Iterable<String> getTokens();
+        
+        public void close();
 }

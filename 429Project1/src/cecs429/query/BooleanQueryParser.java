@@ -70,6 +70,7 @@ public class BooleanQueryParser {
 				subStart = lit.bounds.start + lit.bounds.length;
 				
 			} while (subStart < subquery.length());
+                        
 			
 			// After processing all literals, we are left with a conjunctive list
 			// of query components, and must fold that list into the final disjunctive list
@@ -78,11 +79,20 @@ public class BooleanQueryParser {
 			// If there was only one literal in the subquery, we don't need to AND it with anything --
 			// its component can go straight into the list.
 			if (subqueryLiterals.size() == 1) {
-				allSubqueries.add(subqueryLiterals.get(0));
+                            allSubqueries.add(subqueryLiterals.get(0));	
 			}
+                        else if(query.contains("-") || subquery.contains("-")){
+                            allSubqueries.add(new NotQuery(subqueryLiterals));
+                            }
+                        else if(query.contains("+")){
+                            allSubqueries.add(new OrQuery(subqueryLiterals));
+                        }
+                        
 			else {
-				// With more than one literal, we must wrap them in an AndQuery component.
-				allSubqueries.add(new AndQuery(subqueryLiterals));
+                            
+                            // With more than one literal, we must wrap them in an AndQuery component.
+                            allSubqueries.add(new AndQuery(subqueryLiterals));
+
 			}
 			start = nextSubquery.start + nextSubquery.length;
 		} while (start < query.length());
@@ -109,19 +119,20 @@ public class BooleanQueryParser {
 		
 		// Find the start of the next subquery by skipping spaces and + signs.
 		char test = query.charAt(startIndex);
-		while (test == ' ' || test == '+') {
+		while (test == ' ' || test == '+' || test == '-') {
 			test = query.charAt(++startIndex);
 		}
 		
 		// Find the end of the next subquery.
 		int nextPlus = query.indexOf('+', startIndex + 1);
+                int nextMinus = query.indexOf('-', startIndex + 1);
 		
-		if (nextPlus < 0) {
+		if (nextPlus < 0 || nextMinus < 0) {
 			// If there is no other + sign, then this is the final subquery in the
 			// query string.
 			lengthOut = query.length() - startIndex;
 		}
-		else {
+		else if(test == '+'){
 			// If there is another + sign, then the length of this subquery goes up
 			// to the next + sign.
 		
@@ -133,7 +144,13 @@ public class BooleanQueryParser {
 			
 			lengthOut = 1 + nextPlus - startIndex;
 		}
-		
+                else{
+                    test = query.charAt(nextMinus);
+                    while (test == ' ' || test == '-'){
+                        test = query.charAt(--nextMinus);
+                    }
+                    lengthOut = 1 + nextMinus - startIndex;
+                }
 		// startIndex and lengthOut give the bounds of the subquery.
 		return new StringBounds(startIndex, lengthOut);
 	}
@@ -162,15 +179,17 @@ public class BooleanQueryParser {
         nextSpace = subquery.indexOf(' ', startIndex);
         
         if (subquery.charAt(startIndex) == '"') {
-        	nextSpace = subquery.indexOf("\"", ++startIndex);
-        	isPhrase = true;
+            nextSpace = subquery.indexOf("\"", ++startIndex);
+            isPhrase = true;
         }
         
-        /*
-        if(subquery.charAt(startIndex) == '-'){
-        	nextSpace = subquery.indexOf("\"",++startIndex);
-        	isPhrase = true;
-        }*/
+        
+        else if(subquery.charAt(startIndex) == '-' && subquery.charAt(startIndex + 1) == '"'){
+            nextSpace = subquery.indexOf("-\"", ++startIndex);    
+            isPhrase = true;
+
+            
+        }
         
         if (nextSpace < 0) {
         	// No more literals in this subquery.
@@ -182,17 +201,19 @@ public class BooleanQueryParser {
         
         // This is a phrase literal containing multiple terms.
         if (isPhrase) {
-        	System.out.println("???" + subquery.substring(startIndex, startIndex + lengthOut));
+            System.out.println("???" + subquery.substring(startIndex, startIndex + lengthOut));
             return new Literal(
-             new StringBounds(startIndex, lengthOut+1),
-             new PhraseLiteral(subquery.substring(startIndex, startIndex + lengthOut).replaceAll("^(\\W+)|(\\W+)$|'|\"", "").toLowerCase()));
+            new StringBounds(startIndex, lengthOut + 1),
+            new PhraseLiteral(subquery.substring(startIndex, startIndex + lengthOut).replaceAll("^(\\W+)|(\\W+)$|'|\"", "").toLowerCase()));
+        }
+        else{
+            System.out.println("!!!" + subquery.substring(startIndex, startIndex + lengthOut));
+            // This is a term literal containing a single term.
+            return new Literal(
+            new StringBounds(startIndex, lengthOut),
+            new TermLiteral(subquery.substring(startIndex, startIndex + lengthOut).toLowerCase()));
         }
         
-        System.out.println("!!!" + subquery.substring(startIndex, startIndex + lengthOut));
-        // This is a term literal containing a single term.
-        return new Literal(
-         new StringBounds(startIndex, lengthOut),
-         new TermLiteral(NonAlphaProcessor.stemToken(subquery.substring(startIndex, startIndex + lengthOut).replaceAll("^(\\W+)|(\\W+)$|'|\"", "").toLowerCase())));
 		
-	}
+    }
 }
