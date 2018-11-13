@@ -79,22 +79,25 @@ public class WackyWeight implements WeightingStrategy{
         double df = 0;
         double wqt = 0;
         
+        //For each term in the query, get the total wqt based on the wacky formula
         String[] splitQuery = query.split(" ");
         for(String term : splitQuery){
             df = index.getPostings(term).size();
-            wqt = Math.max(0, Math.log((corpSize - df) / (df)));
+            wqt += Math.max(0, Math.log((corpSize - df) / (df)));
         }
         return wqt;
     }
 
     @Override
-    public void getWDT() {
+    public double getWDT() {
         
+        return 0.0;
     }
     
     @Override
-    public void getLd() {
+    public double getLd() {
         
+        return 0.0;
     }
 
 }

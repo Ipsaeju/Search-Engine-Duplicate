@@ -78,23 +78,25 @@ public class TFIDFWeight implements WeightingStrategy{
         double corpSize = corpus.getCorpusSize();
         double df = 0;
         double idf = 0;
-        
+        //For each term in the query, get the total wqt based on the tf-idf formula
         String[] splitQuery = query.split(" ");
         for(String term : splitQuery){
             df = index.getPostings(term).size();
-            idf = Math.log(corpSize / df);
+            idf += Math.log(corpSize / df);
         }
         return idf;
     }
 
     @Override
-    public void getWDT() {
+    public double getWDT() {
         
+        return 0.0;
     }
     
     @Override
-    public void getLd() {
+    public double getLd() {
         
+        return 0.0;
     }
 
 }

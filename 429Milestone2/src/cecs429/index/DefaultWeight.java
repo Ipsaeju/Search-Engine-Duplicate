@@ -77,22 +77,25 @@ public class DefaultWeight implements WeightingStrategy{
         double df = 0;
         double wqt = 0;
         
+        //For each term in the query, get the total wqt based on the default formula
         String[] splitQuery = query.split(" ");
         for(String term : splitQuery){
             df = index.getPostings(term).size();
-            wqt = Math.log(1 + (corpSize / df));
+            wqt += Math.log(1 + (corpSize / df));
         }
         return wqt;
     }
     
     @Override
-    public void getWDT() {
+    public double getWDT() {
         
+        return 0.0;
     }
     
     @Override
-    public void getLd() {
+    public double getLd() {
         
+        return 0.0;
     }
 
 }
