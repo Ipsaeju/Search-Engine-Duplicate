@@ -525,6 +525,23 @@ public class BetterTermDocumentIndexer {
             }
             else{
                 List<Posting> res = rankedRetrieval(query, indx, corp, weightStrat);
+		    
+		if(res.size() <= 0 ){
+                    System.out.println("No documents contain the query: " + query); 
+            	}
+            	else{
+                	for (Posting p : res) {
+                    		listModel.addElement("Document Name: " + corp.getDocument(p.getDocumentId()).getTitle() + " Document Score: "+ p.getPositions());
+                    		System.out.println("Document Name: " + corp.getDocument(p.getDocumentId()).getTitle() + " Document Score: " + p.getPositions());
+                	}
+            	}
+		final JDialog dialog3 = new JDialog(f, "Querying Complete", true);
+            	JLabel queryingDone = new JLabel("Number of documents returned: "+ res.size());
+            	dialog3.add(queryingDone);
+            	dialog3.setSize(250, 100);
+            	dialog3.setLocationRelativeTo(null);
+            	dialog3.setVisible(true);
+            	dialog3.setResizable(false);
             }
 
             scan.close();
