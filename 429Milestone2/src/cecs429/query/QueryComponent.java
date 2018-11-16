@@ -8,6 +8,12 @@ import java.util.List;
  * other components. All nodes in a query parse tree are QueryComponent objects.
  */
 public interface QueryComponent {
+	
+    /**
+     * Retrieves the sign of the query component.
+     */
+	boolean getSign();
+	
     /**
      * Retrieves a list of postings for the query component, using an Index as the source.
      */

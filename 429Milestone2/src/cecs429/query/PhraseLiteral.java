@@ -41,10 +41,10 @@ public class PhraseLiteral implements QueryComponent {
 		
 		// iterate through each term and store it's postings
 		for(String s : mTerms){
-                    if(s.equals("")){
-                        continue;
-                    }
-                    allPostings.add(index.getPostings(NonAlphaProcessor.stemToken(s)));
+			if(s.equals("")){
+				continue;
+			}
+			allPostings.add(index.getPostings(NonAlphaProcessor.stemToken(s)));
 		}
 		
 		// set result to the first posting 
@@ -109,6 +109,12 @@ public class PhraseLiteral implements QueryComponent {
 	@Override
 	public String toString() {
 		return "\"" + String.join(" ", mTerms) + "\"";
+	}
+
+	@Override
+	public boolean getSign() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 	
 }

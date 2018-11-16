@@ -30,4 +30,10 @@ public class TermLiteral implements QueryComponent {
 		return mTerm;
 	}
 
+	@Override
+	public boolean getSign() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }

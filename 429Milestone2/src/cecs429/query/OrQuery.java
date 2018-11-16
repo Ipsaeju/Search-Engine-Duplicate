@@ -22,40 +22,46 @@ public class OrQuery implements QueryComponent {
 	public List<Posting> getPostings(Index index) {
 		// TODO: program the merge for an OrQuery, by gathering the postings of the composed QueryComponents and
 		// union the resulting postings.
-                List<Posting> result = new ArrayList<>();
-                
-
-		List<List<Posting>> allPostings = new ArrayList<List<Posting>>();
-                List<String> plusQueries = new ArrayList<>();
-                boolean containsPlus = false;
-                for(int i = 0; i < mComponents.size(); i++){
-                    QueryComponent q = mComponents.get(i);
-                    String query = q.toString();
-                    if(!query.contains("+") && !query.equals("") && !query.equals(" ")){
-                        plusQueries.add(query);
-                    }
-                    else{
-                        containsPlus = true;
-                    }
-                }
-                for(int i = 0; i < plusQueries.size(); i++){
-                    String plusQuery = plusQueries.get(i);
-                    System.out.println(plusQuery);
-                    if(containsPlus){
-                        TermLiteral tl = new TermLiteral(plusQuery);
-                        allPostings.add(tl.getPostings(index));
-                    }
-                    else{
-                        allPostings.add(index.getPostings(plusQuery));
+        List<Posting> result = new ArrayList<>();
+        
+        List<List<Posting>> allPostings = new ArrayList<List<Posting>>();
+        for(QueryComponent q : mComponents){
+            allPostings.add(q.getPostings(index));
+        }
+        
+        result = allPostings.get(0);
+        for(int i = 1; i < allPostings.size(); i++){
+            int k = 0;
+            List<Posting> tempResult = new ArrayList<>();
+            for(int j = 0; j < allPostings.get(i).size() || k < result.size();){
+                if(k >= result.size()){
+                    while(j < allPostings.get(i).size()){
+                        tempResult.add(new Posting(allPostings.get(i).get(j++).getDocumentId()));
                     }
                 }
-                for(int k = 0; k < allPostings.size(); k++){
-                    for(int j = 0; j < allPostings.get(k).size(); j++){
-                        result.add(new Posting(allPostings.get(k).get(j).getDocumentId(), allPostings.get(k).get(j).getPositions()));
+                else if(j >= allPostings.get(i).size()){
+                    while(k < result.size()){
+                        tempResult.add(new Posting(result.get(k++).getDocumentId()));
                     }
                 }
-
-		return result;
+                else if(result.get(k).getDocumentId() < allPostings.get(i).get(j).getDocumentId()){
+                    tempResult.add(new Posting(result.get(k).getDocumentId()));
+                    k++;
+                }
+                else if(result.get(k).getDocumentId() > allPostings.get(i).get(j).getDocumentId()){
+                    tempResult.add(new Posting(allPostings.get(i).get(j).getDocumentId()));
+                    j++;
+                }
+                else{
+                    tempResult.add(new Posting(result.get(k).getDocumentId()));
+                    k++;
+                    j++;
+                }
+            }
+            result = tempResult;
+        }
+        
+        return result;
 	}
 	
 	@Override
@@ -64,5 +70,11 @@ public class OrQuery implements QueryComponent {
 		return "(" +
 		 String.join(" + ", mComponents.stream().map(c -> c.toString()).collect(Collectors.toList()))
 		 + " )";
+	}
+
+	@Override
+	public boolean getSign() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 }
