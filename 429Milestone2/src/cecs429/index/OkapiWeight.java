@@ -4,9 +4,11 @@ import cecs429.documents.Document;
 import cecs429.documents.DocumentCorpus;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
@@ -87,16 +89,49 @@ public class OkapiWeight implements WeightingStrategy{
         return wqt;
     }
 
-    @Override
-    public double getWDT() {
-        
-        return 0.0;
+    public double getWDT(Posting p) {
+        File weightsFile = new File("index//docWeights.bin");
+        double wdt = 0.0;
+        int docID = p.getDocumentId();
+        try {
+            // RandomAccessFile object
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            //Find the document via doc id
+            inWeights.seek(docID);
+            //Read value and set it as wdt
+            wdt = inWeights.readDouble();
+        }   catch (FileNotFoundException ex) {
+                Logger.getLogger(DefaultWeight.class.getName()).log(Level.SEVERE, null, ex);
+        }   catch (IOException ex) {
+            Logger.getLogger(DefaultWeight.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return wdt;
     }
     
     @Override
-    public double getLd() {
-        
-        return 0.0;
+    public double getLd(Posting p) {
+        File weightsFile = new File("index//docWeights.bin");
+        double wdt = 0.0;
+        double ld = 0.0;
+        int docID = p.getDocumentId();
+        try {
+            // RandomAccessFile object
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            //Find the document via doc id
+            inWeights.seek(docID);
+            //Read value and set it as wdt
+            wdt = inWeights.readDouble();
+            //Seek past wdt
+            inWeights.seek((long) wdt);
+            //Read value and set it as ld
+            ld = inWeights.readDouble();
+            
+        }   catch (FileNotFoundException ex) {
+                Logger.getLogger(DefaultWeight.class.getName()).log(Level.SEVERE, null, ex);
+        }   catch (IOException ex) {
+            Logger.getLogger(DefaultWeight.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ld;
     }
     
     public double getAvgTokens(String mPath, DocumentCorpus corpus){

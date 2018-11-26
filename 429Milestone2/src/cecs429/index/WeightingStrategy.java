@@ -9,7 +9,7 @@ public interface WeightingStrategy {
     //Weighs query based on the terms in the query
     public double queryWeight(String query, DocumentCorpus corp, Index index);
     //Gets the wdt for a particular document
-    public double getWDT();
+    public double getWDT(Posting p);
     //Gets the Ld for a particular document
-    public double getLd();
+    public double getLd(Posting p);
 }
