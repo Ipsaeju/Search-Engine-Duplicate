@@ -1,6 +1,5 @@
 package cecs429.index;
 
-import cecs429.documents.DocumentCorpus;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,22 +15,22 @@ public class DiskIndexWriter{
     private Index mIndex;
     private HashMap<String, Long> mPostingsHmap;
     private HashMap<String, Long> mVocabsHmap;
-    private DocumentCorpus corpus;
+    private WeightingStrategy mStrat;
 
-    public DiskIndexWriter(Index index, String path, DocumentCorpus corp){
+    public DiskIndexWriter(Index index, String path, WeightingStrategy strat){
         mIndex = index;
         mVocab = mIndex.getVocabulary();
         mPath = path;
-        corpus = corp;
         mPostingsHmap = new HashMap<String, Long>();
         mVocabsHmap = new HashMap<String, Long>();
+        mStrat = strat;
     }
 
-    public void writeIndex(int weightChoice){
+    public void writeIndex(){
         createPostingsBin();
         createVocabBin();
         createVocabTableBin();
-        createDocWeightsBin(weightChoice);
+        mStrat.createDocWeightBin();
     }
 
     public void createPostingsBin(){
@@ -50,13 +49,19 @@ public class DiskIndexWriter{
                 // store postings for term
                 List<Posting> post = mIndex.getPostings(vocab);
 
+                // get document frequency
                 int docFreq = post.size();
+                // write document frequency onto postings file
                 out.writeInt(docFreq);
+                
                 // get a posting from postings list
                 for(Posting p : post){	
-                    // get postings id
+                    // get postings id with gap
                     pID = p.getDocumentId() - prevID;
+                    
+                    // store latest posting id
                     prevID = p.getDocumentId();
+                    
                     // get postings positions
                     ArrayList<Integer> positions = p.getPositions();
 
@@ -65,8 +70,12 @@ public class DiskIndexWriter{
 
                     // get a position from positions list
                     for(int pos: positions){
+                    	// get position with gap
                         currPos = pos - prevPos;
+                        
+                        // store latest position
                         prevPos = pos;
+                        
                         // write position into binary file
                         out.writeInt(currPos);
                     }
@@ -106,26 +115,6 @@ public class DiskIndexWriter{
             e.printStackTrace();
         }
     }
-
-    public void createDocWeightsBin(int choice){
-        switch(choice){
-            case 1: DefaultWeight defW = new DefaultWeight();
-            defW.docWeight(mPath, corpus);
-            break;
-            case 2: TFIDFWeight tfidfW = new TFIDFWeight();
-            tfidfW.docWeight(mPath, corpus);
-            break;
-            case 3: OkapiWeight okapiW = new OkapiWeight();
-            okapiW.docWeight(mPath, corpus);
-            break;
-            case 4: WackyWeight wackyW = new WackyWeight();
-            wackyW.docWeight(mPath, corpus);
-            break;
-            default: System.out.println("Please choose a valid weighting system");
-            break;
-        }
-    }
-    
 
     public void createVocabTableBin(){
         try {

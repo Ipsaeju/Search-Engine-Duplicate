@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 public class Posting {
 	private int mDocumentId;
+	private double mDocumentScore;
 	private ArrayList<Integer> mPositions;
 
 	public Posting(int documentId) {
@@ -25,6 +26,15 @@ public class Posting {
 		mPositions = positions;
 	}
 	
+	public Posting(int documentId, double score) {
+		mDocumentId = documentId;
+		mDocumentScore = score;
+	}
+
+	public double getDocumentScore() {
+		return mDocumentScore;
+	}
+
 	public int getDocumentId() {
 		return mDocumentId;
 	}

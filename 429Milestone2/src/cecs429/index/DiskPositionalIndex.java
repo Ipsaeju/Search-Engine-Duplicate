@@ -167,7 +167,7 @@ public class DiskPositionalIndex implements Index{
                         return posPostings;
                 } else if (term.compareTo(tempTerm) < 0){	// term comes before tempTerm so adjust j
                         j=m;
-                } else {					// term comes after tempTerm so adjust i
+                } else {									// term comes after tempTerm so adjust i
                         i=m;
                 }		
             }
@@ -183,35 +183,5 @@ public class DiskPositionalIndex implements Index{
         }
         return 0; 
     }
-    
-    public void addTerm(String term, int documentId, int position) {
-		// ArrayList to get the values for the key (term)
-	    ArrayList<Posting> values = mHmap.get(term);
-
-	    // if term isn't in HashMap
-	    if(values == null) {
-	    	// create an empty ArrayList
-	    	values = new ArrayList<Posting>();
-	    	// create a posting
-	    	Posting p = new Posting(documentId,position);
-	    	// add posting to ArrayList
-	    	values.add(p);
-	    	// insert posting into HashMap
-	    	mHmap.put(term, values);
-	    } 
-	    // term is in index
-	    else {
-	        // if documentId isn't in values add it
-	        if(values.get(values.size() - 1).getDocumentId() != documentId){
-	        	// create a posting
-		    	Posting p = new Posting(documentId,position);
-	        	mHmap.get(term).add(p);
-	        }
-	        // term and documentId already exists -> add new position
-	        else {
-	        	mHmap.get(term).get(values.size()-1).addPosition(position);
-	        }
-	    }
-	}
 	
 }
