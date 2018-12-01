@@ -232,16 +232,16 @@ public class DefaultWeight implements WeightingStrategy{
 
         try {
             // RandomAccessFile object
-            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "r");
 			
             // change docID to 32 byte value and convert to long
-			long docIdByte = Long.valueOf(docID*32);
+			long docIdByte = Math.abs(Long.valueOf(docID*32) & 0x0f);
 
 			// get position of docLd
 			long pos = docIdByte;
 
 			// seek to that docLd
-			inWeights.seek(pos);
+			inWeights.seek(pos & 0x0f);
 
 			// read ld from document weight file
 			ld = inWeights.readDouble();
