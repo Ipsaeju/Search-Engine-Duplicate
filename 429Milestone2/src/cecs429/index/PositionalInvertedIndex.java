@@ -67,7 +67,7 @@ public class PositionalInvertedIndex implements Index {
 	    }
 	}
 
-	@Override
+
 	public List<Posting> getPostingsTftd(String term) {
 		// TODO Auto-generated method stub
 		return null;

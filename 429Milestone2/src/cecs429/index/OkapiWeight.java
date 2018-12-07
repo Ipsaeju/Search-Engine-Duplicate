@@ -32,7 +32,7 @@ public class OkapiWeight implements WeightingStrategy{
 	public void createDocWeightBin() {
 		try {
 			// create binary file for document weights
-			DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "docWeights.bin"));
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "okapidocWeights.bin"));
 			
 			// create binary file for average docLength
 			DataOutputStream outAveDocLength = new DataOutputStream(new FileOutputStream(mPath + "aveDocLength.bin"));
@@ -203,14 +203,14 @@ public class OkapiWeight implements WeightingStrategy{
         File aveDocLengthFile = new File("index//aveDocLength.bin");
         
         // file object for document weights file
-        File weightsFile = new File("index//docWeights.bin");
+        File weightsFile = new File("index//okapidocWeights.bin");
 
         try {
             // RandomAccessFile object
-            RandomAccessFile aveDocLengthRF = new RandomAccessFile(aveDocLengthFile, "rb");
+            RandomAccessFile aveDocLengthRF = new RandomAccessFile(aveDocLengthFile, "r");
             
             // RandomAccessFile object
-            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "r");
 			
             // change docID to 32 byte value; convert to long; add 8 to get correct position for docLength
 			long docIdByte = Long.valueOf((docID*32)+8);
@@ -268,11 +268,11 @@ public class OkapiWeight implements WeightingStrategy{
 		double ld = 0.0;
 		
         // file object for postings file
-        File weightsFile = new File("index//docWeights.bin");
+        File weightsFile = new File("index//okapidocWeights.bin");
 
         try {
             // RandomAccessFile object
-            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "r");
 			
             // change docID to 32 byte value and convert to long
 			long docIdByte = Long.valueOf(docID*32);

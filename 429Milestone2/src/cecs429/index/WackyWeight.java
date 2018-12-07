@@ -31,7 +31,7 @@ public class WackyWeight implements WeightingStrategy{
 	public void createDocWeightBin() {
 		try {
 			// create binary file for document weights
-			DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "docWeights.bin"));
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "wackydocWeights.bin"));
 			
 			// create binary file for average docLength
 			DataOutputStream outAveDocLength = new DataOutputStream(new FileOutputStream(mPath + "aveDocLength.bin"));
@@ -198,11 +198,11 @@ public class WackyWeight implements WeightingStrategy{
 		double aveTFTD = 0.0;
         
         // file object for document weights file
-        File weightsFile = new File("index//docWeights.bin");
+        File weightsFile = new File("index//wackydocWeights.bin");
 
         try {
             // RandomAccessFile object
-            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "r");
 			
             // change docID to 32 byte value; convert to long; add 24 to get correct position for average tftd
 			long docIdByte = Long.valueOf((docID*32)+24);
@@ -254,11 +254,11 @@ public class WackyWeight implements WeightingStrategy{
 		double ld = 0.0;
 		
         // file object for postings file
-        File weightsFile = new File("index//docWeights.bin");
+        File weightsFile = new File("index//wackydocWeights.bin");
 
         try {
             // RandomAccessFile object
-            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "rb");
+            RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "r");
 			
             // change docID to 32 byte value and convert to long
 			long docIdByte = Long.valueOf(docID*32);

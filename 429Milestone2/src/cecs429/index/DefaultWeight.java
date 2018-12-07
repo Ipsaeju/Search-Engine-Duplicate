@@ -32,7 +32,7 @@ public class DefaultWeight implements WeightingStrategy{
 	public void createDocWeightBin() {
 		try {
 			// create binary file for document weights
-			DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "docWeights.bin"));
+			DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "defaultdocWeights.bin"));
 			
 			// create binary file for average docLength
 			DataOutputStream outAveDocLength = new DataOutputStream(new FileOutputStream(mPath + "aveDocLength.bin"));
@@ -228,20 +228,20 @@ public class DefaultWeight implements WeightingStrategy{
 		double ld = 0.0;
 		
         // file object for postings file
-        File weightsFile = new File("index//docWeights.bin");
+        File weightsFile = new File("index//defaultdocWeights.bin");
 
         try {
             // RandomAccessFile object
             RandomAccessFile inWeights = new RandomAccessFile(weightsFile, "r");
 			
             // change docID to 32 byte value and convert to long
-			long docIdByte = Math.abs(Long.valueOf(docID*32) & 0x0f);
+			long docIdByte = Long.valueOf(docID) * 32L;
 
 			// get position of docLd
 			long pos = docIdByte;
 
 			// seek to that docLd
-			inWeights.seek(pos & 0x0f);
+			inWeights.seek(pos);	//&0x0f
 
 			// read ld from document weight file
 			ld = inWeights.readDouble();

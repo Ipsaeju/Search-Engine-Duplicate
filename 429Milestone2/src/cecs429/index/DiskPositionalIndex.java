@@ -1,5 +1,6 @@
 package cecs429.index;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -100,12 +101,10 @@ public class DiskPositionalIndex implements Index{
 				// store term frequency
 				int tf = inPostings.readInt();
 				// change tf to 4 byte value and convert to long
-				long tfByte = Long.valueOf(tf*4);
 				// store current file position pointer
-				long currentPos= inPostings.getFilePointer();
+			//	long currentPos= inPostings.getFilePointer();
+                                inPostings.skipBytes(tf*4);
 				// use seek to skip past positions and current position
-				inPostings.seek(tfByte+currentPos & 0x0f);
-				// create posting
 				Posting p = new Posting(docIDGapless, tf);
 				// add posting to list of postings
 				results.add(p);
@@ -137,52 +136,57 @@ public class DiskPositionalIndex implements Index{
 		// create file objects
 		File vocabTableFile = new File("index//vocabTable.bin");
 		File vocabFile = new File("index//vocab.bin");
-
+                long posPostings = 0;
 		try {
 			// create RandomAccessFile objects
 			RandomAccessFile inVocabTable = new RandomAccessFile(vocabTableFile, "r");
 			RandomAccessFile inVocab = new RandomAccessFile(vocabFile, "r");
 			// get length of vocabTableFile
-			long len = vocabTableFile.length()/16;
+			long len = vocabTableFile.length() / 16;
 			// variables to assist iterating
 			long i = 0;
-			long j = len-1;
+			long j = (len - 1);
 
 			// loop to iterate through VocabTableFile
 			while (i <= j){
 				// m is the position of a vocab term; m is in the middle
 				long m = (i+j)/2;
 				// seek to m position
-				inVocabTable.seek(m);
+				inVocabTable.seek(m * 16);
 				// store byte position of vocab term
 				long posVocab = inVocabTable.readLong();
 				// seek to vocab term position
 				inVocab.seek(posVocab);
 				// store vocab term
+                                
+                                
 				String tempTerm = inVocab.readUTF();
 
 				// compare terms if 0 then there equal
 				if(term.compareTo(tempTerm) == 0){
 					// store postings position
-					long posPostings = inVocabTable.readLong();
+					posPostings = inVocabTable.readLong();
 					// return postings position
 					return posPostings;
 				} else if (term.compareTo(tempTerm) < 0){	// term comes before tempTerm so adjust j
-					j=m;
+					j=m - 1;
 				} else {									// term comes after tempTerm so adjust i
-					i=m;
+					i=m + 1;
 				}		
 			}
 			// close files
 			inVocabTable.close();
 			inVocab.close();
+                        return posPostings;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+                        
 		}
+                
 		return 0; 
 	}
 
