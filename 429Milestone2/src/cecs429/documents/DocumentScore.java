@@ -26,6 +26,6 @@ public class DocumentScore implements Comparable<DocumentScore> {
     }
 
     public int compareTo(DocumentScore other) {
-            return Double.compare(this.key, other.getKey());
+            return Double.compare(other.getKey(),this.key);
     }	
 }
