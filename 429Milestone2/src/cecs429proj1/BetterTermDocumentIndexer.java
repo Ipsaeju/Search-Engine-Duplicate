@@ -64,6 +64,7 @@ public class BetterTermDocumentIndexer {
 	private static List<Posting> results = new ArrayList<>();
 	private static WeightingStrategy ws;
         private static DiskPositionalIndex dpi;
+        private static List<Posting> rankedResult;
 
 	public static void main(String[] args) {
 		String articlesDirectory = getDirectoryPathGUI();
@@ -125,7 +126,7 @@ public class BetterTermDocumentIndexer {
 		class ListSelectionListener implements MouseListener{
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				displayContent(corp.getDocument(results.get(resultsList.getSelectedIndex()).getDocumentId()).getContent());
+				displayContent(corp.getDocument(rankedResult.get(resultsList.getSelectedIndex()).getDocumentId()).getContent());
 			}
 
 			@Override
@@ -515,7 +516,7 @@ public class BetterTermDocumentIndexer {
 
 	public static List<Posting> rankedRetrieval(String query, DiskPositionalIndex i, WeightingStrategy strat){
 		// results of list postings
-		List<Posting> result = new ArrayList<>();
+		rankedResult = new ArrayList<>();
 
 		// split query into separate terms
 		String termList[] = query.split(" ");
@@ -602,10 +603,10 @@ public class BetterTermDocumentIndexer {
 			DocumentScore tempScoreHolder = pq.poll();
 
 			// store posting in a list
-			result.add(new Posting(tempScoreHolder.getValue(),tempScoreHolder.getKey()));
+			rankedResult.add(new Posting(tempScoreHolder.getValue(),tempScoreHolder.getKey()));
 		}
 
-		return result;
+		return rankedResult;
 	}
 
 }
