@@ -48,10 +48,10 @@ public class DiskIndexWriter{
             DataOutputStream out = new DataOutputStream(new FileOutputStream(mPath + "postings.bin"));
             // get a term from vocab list
             for(String vocab : mVocab){
-                int pID = 0;
+                // variables to store id with/out gap
+		int pID = 0;
                 int prevID = 0;
-                int currPos = 0;
-                int prevPos = 0;
+		
                 // store term and where it started
                 mPostingsHmap.put(vocab, (long) out.size());
 
@@ -82,6 +82,10 @@ public class DiskIndexWriter{
                     
                     // write tf into binary file
                     out.writeInt(tf);
+			
+		    // variables to store positions with/out gap
+		    int currPos = 0;
+                    int prevPos = 0;
 
                     // get a position from positions list
                     for(int pos: positions){
